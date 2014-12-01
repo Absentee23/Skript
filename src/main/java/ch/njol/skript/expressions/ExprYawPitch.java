@@ -22,6 +22,7 @@
 package ch.njol.skript.expressions;
 
 import org.bukkit.Location;
+import org.bukkit.event.Event;
 
 import ch.njol.skript.doc.Description;
 import ch.njol.skript.doc.Examples;
@@ -31,6 +32,9 @@ import ch.njol.skript.expressions.base.SimplePropertyExpression;
 import ch.njol.skript.lang.Expression;
 import ch.njol.skript.lang.SkriptParser.ParseResult;
 import ch.njol.util.Kleenean;
+import ch.njol.util.coll.CollectionUtils;
+import ch.njol.skript.classes.Changer;
+import ch.njol.skript.classes.Changer.ChangeMode;
 
 /**
  * @author Peter Güttinger
@@ -55,7 +59,7 @@ public class ExprYawPitch extends SimplePropertyExpression<Location, Float> {
 	@SuppressWarnings("null")
 	@Override
 	public Float convert(final Location l) {
-		return yaw ? l.getYaw() : l.getPitch();
+		return yaw ? convertToPositive(l.getYaw()) : l.getPitch();
 	}
 	
 	@Override
@@ -68,4 +72,46 @@ public class ExprYawPitch extends SimplePropertyExpression<Location, Float> {
 		return yaw ? "yaw" : "pitch";
 	}
 	
+	@SuppressWarnings("unchecked")
+	@Override
+	public Class<?>[] acceptChange(final ChangeMode mode) {
+		if (mode == Changer.ChangeMode.SET || mode == Changer.ChangeMode.ADD || mode == Changer.ChangeMode.REMOVE)
+			return CollectionUtils.array(Float.class);
+		return null;
+	}
+
+	@Override
+	public void change(Event e, Object[] delta, Changer.ChangeMode mode) {
+		Location l = getExpr().getSingle(e);
+		Float f = (Float) delta[0];
+		switch (mode) {
+		case SET:
+			if (yaw)
+				l.setYaw(convertToPositive(f));
+			else
+				l.setPitch(f);
+		case ADD:
+			if (yaw)
+				l.setYaw(convertToPositive(l.getYaw()) + f);
+			else
+				l.setPitch(l.getPitch() + f);
+			break;
+		case REMOVE:
+			if (yaw)
+				l.setYaw(convertToPositive(l.getYaw()) - f);
+			else
+				l.setPitch(l.getPitch() - f);
+			break;
+		default:
+			break;
+		}
+	}
+
+
+	//Some random method decided to use for converting to positive values.
+	public float convertToPositive(Number n) {
+		if (n.floatValue() * -1 == Math.abs(n.floatValue()))
+			return 360 + n.floatValue();
+		return n.floatValue();
+	}
 }
