@@ -26,6 +26,7 @@ import java.io.StreamCorruptedException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Bat;
 import org.bukkit.entity.Blaze;
@@ -37,12 +38,14 @@ import org.bukkit.entity.Creature;
 import org.bukkit.entity.Egg;
 import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EnderDragon;
+import org.bukkit.entity.Endermite;
 import org.bukkit.entity.EnderPearl;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Fireball;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Ghast;
 import org.bukkit.entity.Giant;
+import org.bukkit.entity.Guardian;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.ItemFrame;
@@ -52,6 +55,7 @@ import org.bukkit.entity.MushroomCow;
 import org.bukkit.entity.Painting;
 import org.bukkit.entity.PigZombie;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Rabbit;
 import org.bukkit.entity.Silverfish;
 import org.bukkit.entity.Slime;
 import org.bukkit.entity.SmallFireball;
@@ -153,6 +157,16 @@ public class SimpleEntityData extends EntityData<Entity> {
 			types.add(new SimpleEntityDataInfo("wither", Wither.class));
 			types.add(new SimpleEntityDataInfo("wither skull", WitherSkull.class));
 		}
+		
+		if (Skript.classExists("org.bukkit.entity.Guardian")) {
+			//Spigot 1.8 doesn't have checks for elder guardian or normal guardian. So SimpleEntityData will be fine for now.
+			types.add(new SimpleEntityDataInfo("guardian", Guardian.class));
+			//Same with rabbit, No support for different types of rabbits yet.
+			types.add(new SimpleEntityDataInfo("rabbit", Rabbit.class));
+			types.add(new SimpleEntityDataInfo("endermite", Endermite.class));
+			types.add(new SimpleEntityDataInfo("armor stand", ArmorStand.class));
+		}
+		
 		if (Skript.classExists("org.bukkit.entity.Firework"))
 			types.add(new SimpleEntityDataInfo("firework", Firework.class));
 		
